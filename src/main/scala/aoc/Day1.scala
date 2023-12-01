@@ -2,8 +2,7 @@ package aoc
 
 object Day1 extends App with Common {
 
-  lazy val digits =
-    Seq("NEVERMATCH", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+  lazy val digits = Seq("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 
   def partOne(input: Seq[String]): Int = input.map { s =>
     val ds = s.filter(c => c.isDigit)
@@ -12,7 +11,7 @@ object Day1 extends App with Common {
 
   def findDigit(s: String): Option[Int] = {
     if (s.head.isDigit) s.head.toString.toIntOption
-    else digits.zipWithIndex.find { case (d, _) => s.startsWith(d) }.map(_._2)
+    else digits.zipWithIndex.find { case (d, _) => s.startsWith(d) }.map(_._2 + 1)
   }
 
   def partTwo(input: Seq[String]): Int = input.flatMap { s =>
