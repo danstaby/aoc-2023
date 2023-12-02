@@ -10,6 +10,7 @@ lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.2.15"
 lazy val root = (project in file("."))
   .settings(
     name := "aoc",
+    libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "2.2.0",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += munit % Test
   )
