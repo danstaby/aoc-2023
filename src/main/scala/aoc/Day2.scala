@@ -1,7 +1,6 @@
 package aoc
 
 import scala.math.max
-import scala.util.parsing.combinator.JavaTokenParsers
 
 object Day2 extends App with Common {
 
