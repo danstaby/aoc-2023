@@ -4,16 +4,14 @@ import scala.math.max
 
 object Day2 extends App with Common {
 
-  def parseInput(input: Seq[String]): Seq[Seq[Map[String, Int]]] = input.map {
+  def parseInput(input: Seq[String]): Seq[Seq[(String, Int)]] = input.map {
     case s"Game $_: $cards" =>
       cards
-        .split("; ")
-        .toSeq
-        .map(_.split(", ").map { case s"$count $color" => color -> count.toInt }.toSeq.toMap)
+        .split("[;,] ")
+        .map { case s"$count $color" => color -> count.toInt }
   }
 
-  def getMaxCubes(game: Seq[Map[String, Int]]): Map[String, Int] =
-    game.flatten.groupMapReduce(_._1)(_._2)(max)
+  def getMaxCubes(game: Seq[(String, Int)]): Map[String, Int] = game.groupMapReduce(_._1)(_._2)(max)
 
   def partOne(input: Seq[String]): Int = {
     val maxCubes = Map("red" -> 12, "green" -> 13, "blue" -> 14)
