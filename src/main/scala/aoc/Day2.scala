@@ -21,9 +21,7 @@ object Day2 extends App with Common {
     }.sum
   }
 
-  def partTwo(input: Seq[String]): Int = parseInput(input).map { game =>
-    getMaxCubes(game).values.product
-  }.sum
+  def partTwo(input: Seq[String]): Int = parseInput(input).map { getMaxCubes(_).values.product }.sum
 
   println("Part 1: " + partOne(problemInput))
   println("Part 2: " + partTwo(problemInput))
