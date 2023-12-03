@@ -42,9 +42,6 @@ object Day3 extends App with Common {
       .sum
   }
 
-  /*
-  Find all symbols that are adjacent to exactly two numbers, multiply those numbers and sum them up.
-   */
   def partTwo(input: Seq[String]): Int = {
     val ps = parseInput(input)
 
