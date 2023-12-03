@@ -21,7 +21,7 @@ object Day3 extends App with Common {
     val newPs = ps.removed(p)
     if (ps.contains(p.left) && acc.isEmpty) buildNumbers(ps, p.left, l)
     else if (ps.contains(p.right)) buildNumbers(newPs, p.right, l, acc + p)
-    else if (ps.size >= 2) buildNumbers(newPs, newPs.keys.head, (acc + p) :: l)
+    else if (newPs.nonEmpty) buildNumbers(newPs, newPs.keys.head, (acc + p) :: l)
     else (acc + p) :: l
   }
 
