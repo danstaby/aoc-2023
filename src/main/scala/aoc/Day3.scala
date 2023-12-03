@@ -25,6 +25,9 @@ object Day3 extends App with Common {
     rec(psOnlyNumbers, psOnlyNumbers.head._1, Nil :: Nil)
   }
 
+  def pointsToNumber(ps: Map[Point, String], p: List[Point]): Int =
+    p.sortBy(_.x).map(ps).reduce(_ + _).toInt
+
   def partOne(input: Seq[String]): Int = {
     val ps = parseInput(input)
 
@@ -32,7 +35,7 @@ object Day3 extends App with Common {
 
     getNumbers(ps)
       .filter(_.exists(_.allDirections.exists(symbols.contains)))
-      .map { _.sortBy(_.x).map(ps).reduce(_ + _).toInt }
+      .map(pointsToNumber(ps, _))
       .sum
   }
 
@@ -43,9 +46,7 @@ object Day3 extends App with Common {
     ps.filter(!_._2.matches("[0-9]"))
       .map { case (p, _) => numbers.filter(_.exists(_.isAdjacentToDiagonal(p))) }
       .filter(_.size == 2)
-      .map { ns =>
-        ns.map(points => points.toSeq.sortBy(_.x).map(ps(_)).reduce(_ + _).toInt).product
-      }
+      .map(_.map(pointsToNumber(ps, _)).product)
       .sum
   }
 
