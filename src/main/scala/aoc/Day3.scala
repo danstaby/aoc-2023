@@ -11,52 +11,42 @@ object Day3 extends App with Common {
     .filter(_._2 != ".")
     .toMap
 
-  @tailrec
-  def buildNumbers(
-      ps: Map[Point, String],
-      p: Point,
-      l: List[Set[Point]] = Nil,
-      acc: Set[Point] = Set.empty
-  ): List[Set[Point]] = {
-    val newPs = ps.removed(p)
-    if (ps.contains(p.left) && acc.isEmpty) buildNumbers(ps, p.left, l)
-    else if (ps.contains(p.right)) buildNumbers(newPs, p.right, l, acc + p)
-    else if (newPs.nonEmpty) buildNumbers(newPs, newPs.keys.head, (acc + p) :: l)
-    else (acc + p) :: l
-  }
+  def getNumbers(ps: Map[Point, String]): List[List[Point]] = {
+    @tailrec
+    def rec(ps: Map[Point, String], p: Point, l: List[List[Point]]): List[List[Point]] =
+      l match {
+        case Nil :: t if ps.contains(p.left) => rec(ps, p.left, Nil :: t)
+        case h :: t if ps.contains(p.right)  => rec(ps.removed(p), p.right, (p :: h) :: t)
+        case h :: t if ps.size >= 2          => rec(ps - p, (ps - p).head._1, Nil :: (p :: h) :: t)
+        case h :: t                          => (p :: h) :: t
+      }
 
-  def getNumbers(ps: Map[Point, String]): List[Set[Point]] = {
     val psOnlyNumbers = ps.filter(_._2.matches("[0-9]"))
-    buildNumbers(psOnlyNumbers, psOnlyNumbers.keys.head)
+    rec(psOnlyNumbers, psOnlyNumbers.head._1, Nil :: Nil)
   }
 
   def partOne(input: Seq[String]): Int = {
     val ps = parseInput(input)
 
+    val symbols = ps.filter(!_._2.matches("[0-9]"))
+
     getNumbers(ps)
-      .filter(
-        _.flatMap(_.allDirections.filter(ps.contains))
-          .exists(ps(_).matches("[^0-9]"))
-      )
-      .map { _.toSeq.sortBy(_.x).map(ps(_)).reduce(_ + _).toInt }
+      .filter(_.exists(_.allDirections.exists(symbols.contains)))
+      .map { _.sortBy(_.x).map(ps).reduce(_ + _).toInt }
       .sum
   }
 
   def partTwo(input: Seq[String]): Int = {
     val ps = parseInput(input)
-
     val numbers = getNumbers(ps)
 
-    val matchingNumbers = ps
-      .collect {
-        case (p, s) if !s.matches("[0-9]") =>
-          numbers.filter(ns => p.allDirections.exists(ns.contains))
-      }
+    ps.filter(!_._2.matches("[0-9]"))
+      .map { case (p, _) => numbers.filter(_.exists(_.isAdjacentToDiagonal(p))) }
       .filter(_.size == 2)
-
-    matchingNumbers.map { ns =>
-      ns.map(points => points.toSeq.sortBy(_.x).map(ps(_)).reduce(_ + _).toInt).product
-    }.sum
+      .map { ns =>
+        ns.map(points => points.toSeq.sortBy(_.x).map(ps(_)).reduce(_ + _).toInt).product
+      }
+      .sum
   }
 
   println("Part 1: " + partOne(problemInput))
