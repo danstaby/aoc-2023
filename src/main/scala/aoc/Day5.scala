@@ -20,15 +20,32 @@ object Day5 extends App with Common {
         )
       })
 
-  def nextLayer(current: Seq[Long], ranges: Seq[MappingRange]): Seq[Long] = {
-    val rule = current
-      .map { c => ranges.find(_.source.contains(c)) }
+  def nextLayer(current: Seq[Long], ranges: Seq[MappingRange]): Seq[Long] = current
+    .map { c =>
+      ranges.find(_.source.contains(c)) match {
+        case Some(r) => c - r.source.start + r.destination.start
+        case None    => c
+      }
+    }
 
-    current
-      .zip(rule)
-      .map {
-        case (c, Some(r)) => c - r.source.start + r.destination.start
-        case (c, None)    => c
+  def nextLayer(current: List[Range], ranges: Seq[MappingRange]): List[Range] = {
+    val intersections =
+      for { c <- current; r <- ranges; i <- r.source.intersection(c) } yield Range(
+        i.start - r.source.start + r.destination.start,
+        i.end - r.source.start + r.destination.start
+      )
+
+    val complements = ranges.foldLeft(current) { case (acc, r) =>
+      acc.flatMap(_.relativeComplement(r.source)).filter(_.nonEmpty)
+    }
+
+    (intersections ++ complements)
+      .sortBy(_.start)
+      .foldLeft(List.empty[Range]) { case (acc, r) =>
+        acc match {
+          case h :: t if h.end >= r.start => Range(h.start, r.end) :: t
+          case _                          => r :: acc
+        }
       }
   }
 
@@ -39,38 +56,12 @@ object Day5 extends App with Common {
     getMaps(data).foldLeft(seeds) { case (current, ranges) => nextLayer(current, ranges) }.min
   }
 
-  def nextLayerRange(current: List[Range], ranges: Seq[MappingRange]): List[Range] = {
-    val newRanges =
-      for { c <- current; r <- ranges; i <- r.source.intersection(c) } yield Range(
-        i.start - r.source.start + r.destination.start,
-        i.end - r.source.start + r.destination.start
-      )
-
-    val complements = for {
-      c <- current
-      comp <- ranges.foldLeft(Seq(c)) { case (acc, r) =>
-        acc.flatMap(_.relativeComplement(r.source)).filter(_.nonEmpty)
-      }
-    } yield comp
-
-    (newRanges ++ complements)
-      .sortBy(_.start)
-      .foldLeft(List.empty[Range]) { case (acc, r) =>
-        acc match {
-          case h :: t if h.end >= r.start => Range(h.start, r.end) :: t
-          case _                          => r :: acc
-        }
-      }
-  }
-
   def partTwo(input: Seq[String]): Long = {
     val data = parseInput(input)
     val seeds = getSeeds(data).grouped(2).map { case Seq(a, b) => Range(a, a + b) }.toList
 
     getMaps(data)
-      .foldLeft(seeds) { case (current, ranges) =>
-        nextLayerRange(current, ranges)
-      }
+      .foldLeft(seeds) { case (current, ranges) => nextLayer(current, ranges) }
       .map(_.start)
       .min
   }
