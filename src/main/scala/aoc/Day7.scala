@@ -17,16 +17,18 @@ object Day7 extends App with Common {
     .sum
 
   def createHandList(cards: Seq[Int]): Seq[Int] = {
-    val counts = cards.filter(_ != 0).groupBy(identity).map(_._2.size).toSeq.sorted.reverse
-    (counts.headOption.map(_ + 5 - counts.sum).orElse(Option(5)) ++ counts.drop(1)).toSeq
-      .padTo(5, 0) ++ cards
+    val counts = cards.filter(_ != 0).groupBy(identity).map(_._2.size).toList.sorted.reverse
+
+    counts match {
+      case Nil    => List(5, 0, 0, 0, 0) ++ cards
+      case h :: t => (h + 5 - counts.sum :: t).padTo(5, 0) ++ cards
+    }
   }
 
-  def compareHands(a: Seq[Int], b: Seq[Int]): Boolean =
-    createHandList(a)
-      .zip(createHandList(b))
-      .collectFirst { case (a, b) if a != b => a > b }
-      .getOrElse(false)
+  def compareHands(a: Seq[Int], b: Seq[Int]): Boolean = createHandList(a)
+    .zip(createHandList(b))
+    .collectFirst { case (a, b) if a != b => a > b }
+    .getOrElse(false)
 
   def partOne(input: Seq[String]): Int =
     scoreHands(parseInput(input).map { case (card, bid) => (card.map(cardValue), bid) })
