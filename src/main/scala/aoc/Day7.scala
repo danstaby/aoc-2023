@@ -23,10 +23,12 @@ object Day7 extends App with Common {
   }
 
   def compareHands(a: Seq[Int], b: Seq[Int]): Boolean =
-    createHandList(a).zip(createHandList(b)).find { case (a, b) => a != b } match {
-      case Some((a, b)) => a > b
-      case None         => true
-    }
+    createHandList(a)
+      .zip(createHandList(b))
+      .collectFirst {
+        case (a, b) if a != b => a > b
+      }
+      .getOrElse(false)
 
   def partOne(input: Seq[String]): Int =
     scoreHands(parseInput(input).map { case (card, bid) => (card.map(cardValue), bid) })
