@@ -25,9 +25,7 @@ object Day7 extends App with Common {
   def compareHands(a: Seq[Int], b: Seq[Int]): Boolean =
     createHandList(a)
       .zip(createHandList(b))
-      .collectFirst {
-        case (a, b) if a != b => a > b
-      }
+      .collectFirst { case (a, b) if a != b => a > b }
       .getOrElse(false)
 
   def partOne(input: Seq[String]): Int =
