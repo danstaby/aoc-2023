@@ -10,6 +10,7 @@ object Point {
 case class Point(x: Int, y: Int) {
 
   def +(other: Point): Point = Point(x + other.x, y + other.y)
+  def -(other: Point): Point = Point(x - other.x, y - other.y)
 
   def isAdjacentTo(other: Point): Boolean = {
     val xDiff = Math.abs(x - other.x)
@@ -23,10 +24,12 @@ case class Point(x: Int, y: Int) {
     (xDiff == 1 && yDiff == 1) || isAdjacentTo(other)
   }
 
-  def left: Point = Point(x - 1, y)
-  def right: Point = Point(x + 1, y)
-  def up: Point = Point(x, y - 1)
-  def down: Point = Point(x, y + 1)
+  lazy val left: Point = Point(x - 1, y)
+  lazy val right: Point = Point(x + 1, y)
+  lazy val up: Point = Point(x, y - 1)
+  lazy val down: Point = Point(x, y + 1)
+
+  lazy val adjacent: Seq[Point] = Seq(up, down, left, right)
 
   def allDirections: Seq[Point] = {
     for {
