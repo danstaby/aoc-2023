@@ -7,12 +7,12 @@ object Point {
   def Right = Point(1, 0)
 }
 
-case class Point(x: Int, y: Int) {
+case class Point(x: Long, y: Long) {
 
   def +(other: Point): Point = Point(x + other.x, y + other.y)
   def -(other: Point): Point = Point(x - other.x, y - other.y)
 
-  def l1Norm(other: Point): Int = Math.abs(x - other.x) + Math.abs(y - other.y)
+  def l1Norm(other: Point): Long = Math.abs(x - other.x) + Math.abs(y - other.y)
 
   def isAdjacentTo(other: Point): Boolean = {
     val xDiff = Math.abs(x - other.x)
