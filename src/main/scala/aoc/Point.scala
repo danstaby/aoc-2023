@@ -1,16 +1,18 @@
 package aoc
 
 object Point {
-  def Up = Point(0, -1)
-  def Down = Point(0, 1)
-  def Left = Point(-1, 0)
-  def Right = Point(1, 0)
+  val Up = Point(0, -1)
+  val Down = Point(0, 1)
+  val Left = Point(-1, 0)
+  val Right = Point(1, 0)
 }
 
 case class Point(x: Long, y: Long) {
 
   def +(other: Point): Point = Point(x + other.x, y + other.y)
   def -(other: Point): Point = Point(x - other.x, y - other.y)
+
+  def *(factor: Long): Point = Point(x * factor, y * factor)
 
   def l1Norm(other: Point): Long = Math.abs(x - other.x) + Math.abs(y - other.y)
 
