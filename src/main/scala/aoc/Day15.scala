@@ -16,22 +16,15 @@ object Day15 extends App with Common {
   def partOne(input: Seq[String]): Long = parseInput(input).map(s => hash(s).toLong).sum
 
   def partTwo(input: Seq[String]): Long = {
-    val slots = IndexedSeq.fill(256)(mutable.ListBuffer.empty[(String, Int)])
+    val slots = IndexedSeq.fill(256)(mutable.LinkedHashMap.empty[String, Int])
 
     parseInput(input).foreach {
-      case s"$a=$b" =>
-        val m = slots(hash(a))
-        if (m.exists(_._1 == a)) m.update(m.indexWhere(_._1 == a), a -> b.toInt)
-        else m.append(a -> b.toInt)
-      case s"${a}-" =>
-        val m = slots(hash(a))
-        if (m.exists(_._1 == a)) m.remove(m.indexWhere(_._1 == a))
+      case s"$a=$b" => slots(hash(a)).update(a, b.toInt)
+      case s"${a}-" => slots(hash(a)).remove(a)
     }
 
     slots.zipWithIndex.map { case (box, boxIdx) =>
-      (boxIdx.toLong + 1L) * box.zipWithIndex.map { case ((_, focalLength), slotIdx) =>
-        (slotIdx + 1) * focalLength.toLong
-      }.sum
+      (boxIdx + 1) * box.zipWithIndex.map { case ((_, l), i) => (i + 1) * l }.sum
     }.sum
   }
 
