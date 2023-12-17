@@ -5,6 +5,8 @@ object Point {
   val Down = Point(0, 1)
   val Left = Point(-1, 0)
   val Right = Point(1, 0)
+
+  val origo = Point(0, 0)
 }
 
 case class Point(x: Long, y: Long) {
@@ -15,6 +17,8 @@ case class Point(x: Long, y: Long) {
   def *(factor: Long): Point = Point(x * factor, y * factor)
 
   def l1Norm(other: Point): Long = Math.abs(x - other.x) + Math.abs(y - other.y)
+
+  def isOrthogonalToOrigo: Boolean = x == 0 || y == 0
 
   def isAdjacentTo(other: Point): Boolean = {
     val xDiff = Math.abs(x - other.x)
