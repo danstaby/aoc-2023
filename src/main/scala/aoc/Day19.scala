@@ -48,21 +48,25 @@ object Day19 extends App with Common {
     case (_, _, "A") :: Nil => countPermutations(parts)
     case (_, _, "R") :: Nil => 0L
     case (_, _, n) :: Nil   => countAcceptedWorkflow(workflows(n).conditions, workflows, parts)
-    case (p, r, "A") :: t =>
-      val intersection = parts(p).intersection(r)
-      val complement = parts(p).relativeComplement(r).filter(_.nonEmpty)
-      complement.map(newr => countAcceptedWorkflow(t, workflows, parts.updated(p, newr))).sum +
-        intersection.map(i => countPermutations(parts.updated(p, i))).sum
-    case (p, r, "R") :: t =>
-      val complement = parts(p).relativeComplement(r).filter(_.nonEmpty)
-      complement.map(newr => countAcceptedWorkflow(t, workflows, parts.updated(p, newr))).sum
     case (p, r, n) :: t =>
-      val intersection = parts(p).intersection(r)
-      val complement = parts(p).relativeComplement(r).filter(_.nonEmpty)
-      complement.map(newr => countAcceptedWorkflow(t, workflows, parts.updated(p, newr))).sum +
-        intersection
-          .map(i => countAcceptedWorkflow(workflows(n).conditions, workflows, parts.updated(p, i)))
-          .sum
+      val intersection = parts.get(p).flatMap(_.intersection(r))
+      val complement = parts.get(p).toList.flatMap(_.relativeComplement(r)).filter(_.nonEmpty)
+
+      val complementSum = complement
+        .map(newr => countAcceptedWorkflow(t, workflows, parts.updated(p, newr)))
+        .sum
+
+      val intersectionSum =
+        if (n == "A") intersection.map(i => countPermutations(parts.updated(p, i))).sum
+        else if (n == "R") 0L
+        else
+          intersection
+            .map(i =>
+              countAcceptedWorkflow(workflows(n).conditions, workflows, parts.updated(p, i))
+            )
+            .sum
+
+      complementSum + intersectionSum
   }
 
   def partTwo(input: Seq[String]): Long = {
