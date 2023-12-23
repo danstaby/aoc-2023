@@ -72,11 +72,11 @@ object Day23 extends App with Common {
     ): Map[Point, List[(Point, Int)]] = {
       val newEdges = edges.map { case (p, neighbors) =>
         p -> neighbors.map { case (n, d, prev) =>
-          val next = graph(n).filter(_._1 != prev)
-
-          if (next.size == 1) (next.head._1, d + 1, n)
-          else if (next.isEmpty) (n, d, prev)
-          else (n, d, n)
+          graph(n).filter(_._1 != prev) match {
+            case h :: Nil => (h._1, d + 1, n)
+            case Nil      => (n, d, prev)
+            case _        => (n, d, n)
+          }
         }
       }
 
